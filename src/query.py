@@ -16,7 +16,6 @@ def count_spc_per_review(reviews):
 
     return counting
 
-
 def spc_per_sentiment(count_spc, spc='!', sentiment='0'):
      df = count_spc[count_spc['LABEL'] == sentiment]
      return df[df[spc] > 0]
