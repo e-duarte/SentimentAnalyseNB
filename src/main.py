@@ -6,6 +6,7 @@ from features_selection import bag_of_words, InformationGain
 
 if __name__ == '__main__':
     db = load_texts()
+    db.to_csv('original.csv')
 
     #pre-processing
     print('PRE-PROCESSING DATASET...')
@@ -19,7 +20,7 @@ if __name__ == '__main__':
     print('GET BAG OF WORDS...')
     bag = bag_of_words(db_preprocessing)
     
-    print(InformationGain(db_preprocessing, bag).entropy_ngrama('no_way'))
+    print(InformationGain(db_preprocessing, bag).gain())
     # print(db_preprocessing[db_preprocessing.REVIEWS.str.find('not') == 0])
 
     

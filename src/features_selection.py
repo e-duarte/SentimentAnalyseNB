@@ -43,37 +43,33 @@ class InformationGain:
         return entropy_h
         
     def cond_prob(self, apri, post):
-        pri = str(apri)
+        apri = str(apri)
         post = str(post)
 
         amostral_space = self.dataset[self.dataset.REVIEWS.str.find(apri) == 0]
         # print(amostral_space)
         post_space = amostral_space[amostral_space.LABEL == post]
         # print(post_space)
-
+        print(apri)
         return len(post_space)/len(amostral_space)
     
-    def entropy_ngrama(self, pri):
-        probs = np.zeros(self.n_classes)
+    def entropy_ngrama(self, apri):
+        probs = np.zeros(self.n_classes, dtype='float64')
 
         for c in range(self.n_classes):
-            probs[c] = self.cond_prob(pri, c)
+            probs[c] = self.cond_prob(apri, c)
         
-        log2s = np.log2(probs)
+        log2s = np.log2(probs, out=np.zeros_like(probs), where=(probs!=0))
 
         entropy_ngrama = .0
         for c in range(self.n_classes):
             entropy_ngrama += probs[c]*log2s[c]
         
-        prob_ngrama = self.prob_review(pri)
+        prob_ngrama = self.prob_review(apri)
         entropy_ngrama = prob_ngrama*entropy_ngrama
 
         complement_prob = 1 - probs
-        complement_log2s = np.log2(complement_prob)
-
-        print(complement_log2s)
-        print(complement_prob)
-        exit()
+        complement_log2s = np.log2(complement_prob, out=np.zeros_like(complement_prob), where=(complement_prob!=0))
 
         c_entropy_ngrama = .0
         for c in range(self.n_classes):
@@ -83,8 +79,13 @@ class InformationGain:
 
         return entropy_ngrama + c_entropy_ngrama
 
-    def gain():
-        pass
+    def gain(self):
+        gain_words = {}
+        for word in self.bag:
+            gain_words[word] = self.H() + self.entropy_ngrama(word)
+        
+        return gain_words
+
         
 
             
