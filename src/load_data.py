@@ -12,7 +12,7 @@ def load_texts():
             dbs.append(to_dataframe(file.readlines()))
 
 
-    return pd.concat(dbs, ignore_index=True)
+    return pd.concat(dbs, ignore_index=True,).astype('string')
 
 def to_dataframe(lines):
     reviews = []
