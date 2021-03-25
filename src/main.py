@@ -19,7 +19,7 @@ if __name__ == '__main__':
     print('GET BAG OF WORDS...')
     bag = bag_of_words(db_preprocessing)
     
-    print(InformationGain(db_preprocessing, bag).cond_prob('no_way', 1))
+    print(InformationGain(db_preprocessing, bag).entropy_ngrama('no_way'))
     # print(db_preprocessing[db_preprocessing.REVIEWS.str.find('not') == 0])
 
     
