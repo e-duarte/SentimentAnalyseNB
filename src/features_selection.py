@@ -2,10 +2,10 @@ import pandas as pd
 import numpy as np
 
 
-def bag_of_words(reviews):
+def bag_of_words(db):
     bag = []
 
-    for review in reviews['REVIEWS']:
+    for review in db.REVIEW:
         for word in review.split(' '):
             bag.append(word)
     bag = list(dict.fromkeys(bag))
