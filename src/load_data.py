@@ -2,28 +2,33 @@ from os import read
 import pandas as pd
 
 
+DIR = 'data/'
+SOURCES = ['amazon_cells_labelled.txt', 'imdb_labelled.txt', 'yelp_labelled.txt']
+
+def read_lines_file(path):
+    lines = []
+    with open(path) as file:
+        lines = file.readlines()
+
+    return [line.replace('\n','') for line in lines]
+
+
+
 def load_texts():
-    sources = ['amazon_cells_labelled.txt', 'imdb_labelled.txt', 'yelp_labelled.txt']
+    paths = [DIR + src for src in SOURCES]
 
-    dbs = []
+    dbs = [to_dataframe(read_lines_file(path)) for path in paths]
 
-    for txt in sources:
-        with open("data/"+txt) as file:
-            dbs.append(to_dataframe(file.readlines()))
-
-
-    return pd.concat(dbs, ignore_index=True,).astype('string')
+    return pd.concat(dbs, ignore_index=True)
 
 def to_dataframe(lines):
     reviews = []
     labels = []
 
     for line in lines:
-        line = line.replace('\n', '')
         review, label = line.split('\t')
         reviews.append(review)
         labels.append(label)
     
-    
-    return pd.DataFrame({'REVIEWS': reviews, 'LABEL': labels})
+    return pd.DataFrame({'REVIEW': reviews, 'LABEL': labels})
 

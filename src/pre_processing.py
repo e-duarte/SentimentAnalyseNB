@@ -1,81 +1,51 @@
 from os import remove
 import re
+from load_data import read_lines_file
 
-special_characters = [
-        '`',
-        '-',
-        '~',
-        '^',
-        # '\'',
-        '\"',
-        ',',
-        '\[...\]',
-        '.',
-        ';',
-        ':'
-        # '?',
-        # '!',
-        '@',
-        '#',
-        '$',
-        '+',
-        '*',
-        '\\',
-        '/',
-        '\(',
-        '\)',
-        '&',
-        ':\)',
-        ';\)',
-        ':D',
-        ':\(',
-        ';\(',
-        ':1\)'
-    ]
+SOURCE_SPC = 'src/special_characters.txt'
+SOURCE_STOPWORDS = 'src/stopwords.txt'
 
-def remove_additional_space(reviews):
-    reviews.REVIEWS = reviews.REVIEWS.str.strip()
-    reviews.REVIEWS = reviews.REVIEWS.str.replace(' +', ' ', regex=True)
-    return reviews
-def remove_special_character(reviews):
-    for scp in special_characters:
-        reviews['REVIEWS'] = reviews['REVIEWS'].str.replace(scp, ' ') #remove spc
-        reviews['REVIEWS'] = reviews['REVIEWS'].str.replace('  ', ' ') #remove doble space
-        reviews['REVIEWS'] = reviews['REVIEWS'].str.replace('!', ' ! ') #remove doble space
-        reviews['REVIEWS'] = reviews['REVIEWS'].str.replace('?', ' ? ') #remove doble space
-        reviews['REVIEWS'] = reviews['REVIEWS'].str.replace(r'^ | $', '', regex=True) #remove space in the begin and the end of line    
-    return remove_additional_space(reviews)
+special_characters = read_lines_file(SOURCE_SPC)
+stopwords = read_lines_file(SOURCE_STOPWORDS)
 
-def remove_stopwords(reviews):
-    stopwords = []
+def lower(lines):
+    print('SWITCH LETTERS TO LOWER CASE')
+    return [line.lower() for line in lines]
 
-    with open('src/stopwords.txt') as file:
-        stopwords = file.readlines()
-    
-    for i in range(len(stopwords)):
-        stopwords[i] = stopwords[i].replace('\n', '')
-    
-    for stp in stopwords:
-        reviews['REVIEWS'] = reviews['REVIEWS'].str.replace(f' {stp} ', ' ', flags=re.IGNORECASE, regex=True) #stopword
-        reviews['REVIEWS'] = reviews['REVIEWS'].str.replace(f'^({stp} )|( {stp})$', '', flags=re.IGNORECASE, regex=True) #stopword
-    
-    for stp in stopwords:
-        reviews.REVIEWS = reviews.REVIEWS.str.replace(f' {stp} ', ' ')
+def remove_additional_space(lines):
+    print('REMOVING ADDICIONAL SPACE')
+    removed_space = [line.strip() for line in lines]
+    return [re.sub(' +',  ' ', line) for line in removed_space]
+
+def separable_punctuation(lines):
+    print('SEPARARING PUNCTUATIONS IN LINE AS WORD')
+    for punct in ['!', '\?']:
+        lines = [re.sub(punct, f' {punct} '.replace('\\',''), line) for line in lines]
+
+    return remove_additional_space(lines)
         
-    return remove_additional_space(reviews)
+def remove_special_character(lines):
+    print('REMOVING SPECIAL CHARACTERS FROM "special_characters.txt" FILE')
+    lines = remove_additional_space(lines)
 
-def concat_words(reviews):
-    words = ['no', 'nothing', 'not']
+    for scp in special_characters:
+        lines = [re.sub(scp, '', line) for line in lines]
+
+    return remove_additional_space(lines)
+
+def remove_stopwords(lines):
+    print('REMOVING STOPWORDS FROM "stopwords.txt" FILE')
+
+    for stp in stopwords:
+        lines = [re.sub(f' {stp} |^({stp}) |( {stp})$', ' ',line) for line in lines]
+  
+    return remove_additional_space(lines)
+
+def concat_words(lines):
+    print('CONCATING WORDS WITH ONLY MEANING')
+    words = ['no', 'nothing', 'not', 'dont', "don't", "doesn't", "didn't", "haven't", "hasn't"]
 
     for word in words:
-        reviews['REVIEWS'] = reviews['REVIEWS'].str.replace(f'({word} )', f'{word}_', flags=re.IGNORECASE, regex=True)
+        lines = [re.sub(f'{word} ', f'{word}_', line) for line in lines]
 
-    return remove_additional_space(reviews)
-
-def remove_words_1_len(bag):
-    for b in bag:
-        if len(b) == 1:
-            if not ((b == '?') or ( b == '!')):
-                bag.remove(b)
-    bag.remove('x')
-    return bag
+    return lines

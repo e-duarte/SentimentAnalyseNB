@@ -1,7 +1,7 @@
-from pandas.core.reshape.concat import concat
+from types import prepare_class
 from load_data import load_texts
 from query import count_spc_per_review, spc_per_sentiment
-from pre_processing import remove_special_character, remove_stopwords, concat_words, remove_words_1_len
+import pre_processing
 from features_selection import bag_of_words, InformationGain
 from create_dataset import vetorize_features
 import pandas as pd
@@ -14,17 +14,15 @@ def save_features(word):
 
 if __name__ == '__main__':
     db = load_texts()
-    # db['REVIEWS'] = db['REVIEWS'].str.lower()
-    # # print(db)
-    # db.to_csv('original.csv')
-
-    # #pre-processing
-    # print('PRE-PROCESSING DATASET...')
-    # db_preprocessing = concat_words(remove_stopwords(remove_special_character(db)))
+    db.to_csv('original.csv')
+    db.REVIEW = pre_processing.lower(db.REVIEW)
+    db.REVIEW = pre_processing.remove_special_character(db.REVIEW)
+    db.REVIEW = pre_processing.separable_punctuation(db.REVIEW)
+    db.REVIEW = pre_processing.remove_stopwords(db.REVIEW)
+    db.REVIEW = pre_processing.concat_words(db.REVIEW)
+    db.dropna()
+    db.to_csv('preprocessed.csv')
     
-    # db_preprocessing.to_csv('preprocessed.csv')
-    # # db_no_stp = remove_stopwords(db_no_spc)
-    # # db_concat = concat_words(db_no_stp)
 
     # #bag-of-word 1-grama
     # print('GET BAG OF WORDS...')
@@ -49,12 +47,12 @@ if __name__ == '__main__':
     # df = pd.read_csv('gain.csv')
     # words = df[df['gain'] >= 0.003].sort_values(by=['gain']).word.to_list()
 
-    with open('src/features.txt', 'r') as file:
-        features = file.readlines()
-        features = [i.replace('\n','') for i in features]
+    # with open('src/features.txt', 'r') as file:
+    #     features = file.readlines()
+    #     features = [i.replace('\n','') for i in features]
 
-    new_db = vetorize_features(db, features)
-    new_db.to_csv('new_db.csv')
+    # new_db = vetorize_features(db, features)
+    # new_db.to_csv('new_db.csv')
     
     
 
