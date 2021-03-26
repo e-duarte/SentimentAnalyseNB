@@ -3,7 +3,7 @@ from load_data import load_texts
 from query import count_spc_per_review, spc_per_sentiment
 from pre_processing import remove_special_character, remove_stopwords, concat_words, remove_words_1_len
 from features_selection import bag_of_words, InformationGain
-from create_dataset import vetorize_features
+from create_dataset import vectorize_features_count
 import pandas as pd
 
 
@@ -14,17 +14,14 @@ def save_features(word):
 
 if __name__ == '__main__':
     db = load_texts()
-    # db['REVIEWS'] = db['REVIEWS'].str.lower()
+    db['REVIEWS'] = db['REVIEWS'].str.lower()
     # # print(db)
     # db.to_csv('original.csv')
 
     # #pre-processing
-    # print('PRE-PROCESSING DATASET...')
-    # db_preprocessing = concat_words(remove_stopwords(remove_special_character(db)))
-    
-    # db_preprocessing.to_csv('preprocessed.csv')
-    # # db_no_stp = remove_stopwords(db_no_spc)
-    # # db_concat = concat_words(db_no_stp)
+    print('PRE-PROCESSING DATASET...')
+    db_preprocessing = concat_words(remove_stopwords(remove_special_character(db)))
+
 
     # #bag-of-word 1-grama
     # print('GET BAG OF WORDS...')
@@ -53,8 +50,9 @@ if __name__ == '__main__':
         features = file.readlines()
         features = [i.replace('\n','') for i in features]
 
-    new_db = vetorize_features(db, features)
-    new_db.to_csv('new_db.csv')
+    new_db = vectorize_features_count(db, features)
+    # new_db.to_csv('new_db.csv')
+
     
     
 
