@@ -3,7 +3,7 @@ from load_data import load_texts
 from query import count_spc_per_review, spc_per_sentiment
 import pre_processing
 from features_selection import bag_of_words, InformationGain
-from create_dataset import vetorize_features
+from create_dataset import vectorize_features_count
 import pandas as pd
 
 
@@ -22,7 +22,7 @@ if __name__ == '__main__':
     db.REVIEW = pre_processing.concat_words(db.REVIEW)
     db.dropna()
     db.to_csv('preprocessed.csv')
-    
+
 
     # #bag-of-word 1-grama
     # print('GET BAG OF WORDS...')
@@ -51,8 +51,14 @@ if __name__ == '__main__':
     #     features = file.readlines()
     #     features = [i.replace('\n','') for i in features]
 
+<<<<<<< HEAD
     # new_db = vetorize_features(db, features)
     # new_db.to_csv('new_db.csv')
+=======
+    new_db = vectorize_features_count(db, features)
+    # new_db.to_csv('new_db.csv')
+
+>>>>>>> c2aeefa5be14a7314e01ef9cda08c520c2f8cfbc
     
     
 
