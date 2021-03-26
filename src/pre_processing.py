@@ -1,7 +1,9 @@
+from os import remove
 import re
 
 special_characters = [
         '`',
+        '-',
         '~',
         '^',
         # '\'',
@@ -15,6 +17,8 @@ special_characters = [
         # '!',
         '@',
         '#',
+        '$',
+        '+',
         '*',
         '\\',
         '/',
@@ -52,8 +56,11 @@ def remove_stopwords(reviews):
         stopwords[i] = stopwords[i].replace('\n', '')
     
     for stp in stopwords:
-        reviews['REVIEWS'] = reviews['REVIEWS'].str.replace(f'( {stp} )', ' ', flags=re.IGNORECASE, regex=True) #stopword
+        reviews['REVIEWS'] = reviews['REVIEWS'].str.replace(f' {stp} ', ' ', flags=re.IGNORECASE, regex=True) #stopword
         reviews['REVIEWS'] = reviews['REVIEWS'].str.replace(f'^({stp} )|( {stp})$', '', flags=re.IGNORECASE, regex=True) #stopword
+    
+    for stp in stopwords:
+        reviews.REVIEWS = reviews.REVIEWS.str.replace(f' {stp} ', ' ')
         
     return remove_additional_space(reviews)
 
@@ -65,3 +72,10 @@ def concat_words(reviews):
 
     return remove_additional_space(reviews)
 
+def remove_words_1_len(bag):
+    for b in bag:
+        if len(b) == 1:
+            if not ((b == '?') or ( b == '!')):
+                bag.remove(b)
+    bag.remove('x')
+    return bag

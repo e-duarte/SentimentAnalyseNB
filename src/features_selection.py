@@ -1,4 +1,4 @@
-from operator import pos
+import pandas as pd
 import numpy as np
 
 
@@ -34,7 +34,6 @@ class InformationGain:
             probs[c] = self.prob_label(c)
         
         log2s = np.log2(probs)
-        print(log2s)
 
         entropy_h = .0
         for c in range(self.n_classes):
@@ -46,11 +45,31 @@ class InformationGain:
         apri = str(apri)
         post = str(post)
 
-        amostral_space = self.dataset[self.dataset.REVIEWS.str.find(apri) == 0]
-        # print(amostral_space)
+        apri  = f'\{apri}' if apri == '?' else apri
+        # apri = f'\{apri}' if apri.find('$') == 0 else apri
+
+        amostral_space = self.dataset[self.dataset.REVIEWS.str.match(
+            f'.*( ){apri}.*( )|^({apri})( ).*|.*( )({apri}$)|^({apri})$'
+        ,) == True]
+
         post_space = amostral_space[amostral_space.LABEL == post]
-        # print(post_space)
-        print(apri)
+
+        return len(post_space)/len(amostral_space)
+
+
+    def cond_prob_complement(self, apri, post):
+        apri = str(apri)
+        post = str(post)
+
+        apri  = f'\{apri}' if apri == '?' else apri
+        # apri = f'\{apri}' if apri.find('$') == 0 else apri
+
+        amostral_space = self.dataset.drop(self.dataset[self.dataset.REVIEWS.str.match(
+            f'.*( ){apri}.*( )|^({apri})( ).*|.*( )({apri}$)|^({apri})$'
+        ,) == True].index)
+
+        post_space = amostral_space[amostral_space.LABEL == post]
+
         return len(post_space)/len(amostral_space)
     
     def entropy_ngrama(self, apri):
@@ -68,7 +87,12 @@ class InformationGain:
         prob_ngrama = self.prob_review(apri)
         entropy_ngrama = prob_ngrama*entropy_ngrama
 
-        complement_prob = 1 - probs
+        #complement
+
+        complement_prob = np.zeros(self.n_classes, dtype='float64')
+        for c in range(self.n_classes):
+            complement_prob[c] = self.cond_prob_complement(apri, c)
+
         complement_log2s = np.log2(complement_prob, out=np.zeros_like(complement_prob), where=(complement_prob!=0))
 
         c_entropy_ngrama = .0
@@ -80,11 +104,14 @@ class InformationGain:
         return entropy_ngrama + c_entropy_ngrama
 
     def gain(self):
-        gain_words = {}
+        gain_words = {'word':[], 'gain':[]}
+
         for word in self.bag:
-            gain_words[word] = self.H() + self.entropy_ngrama(word)
+            gain_words['word'].append(word)
+            gain_words['gain'].append(-self.H() + self.entropy_ngrama(word))
+
         
-        return gain_words
+        return pd.DataFrame(gain_words)
 
         
 
