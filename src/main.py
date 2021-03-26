@@ -16,8 +16,8 @@ if __name__ == '__main__':
     db.REVIEW = pre_processing.lower(db.REVIEW)
     db.REVIEW = pre_processing.separable_punctuation(db.REVIEW)
     db.REVIEW = pre_processing.remove_special_character(db.REVIEW)
-    db.REVIEW = pre_processing.concat_words(db.REVIEW)
     db.REVIEW = pre_processing.remove_stopwords(db.REVIEW)
+    db.REVIEW = pre_processing.concat_words(db.REVIEW)
     db.dropna()
     db.to_csv('preprocessed.csv')
 
