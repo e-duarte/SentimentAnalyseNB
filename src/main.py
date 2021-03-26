@@ -3,6 +3,7 @@ from load_data import load_texts
 from query import count_spc_per_review, spc_per_sentiment
 from pre_processing import remove_special_character, remove_stopwords, concat_words, remove_words_1_len
 from features_selection import bag_of_words, InformationGain
+from create_dataset import vetorize_features
 import pandas as pd
 
 
@@ -12,7 +13,7 @@ def save_features(word):
             file.write(f'{w}\n')
 
 if __name__ == '__main__':
-    # db = load_texts()
+    db = load_texts()
     # db['REVIEWS'] = db['REVIEWS'].str.lower()
     # # print(db)
     # db.to_csv('original.csv')
@@ -45,8 +46,15 @@ if __name__ == '__main__':
     # gain.to_csv('gain.csv')
     # # print(db_preprocessing[db_preprocessing.REVIEWS.str.find('not') == 0])
 
-    df = pd.read_csv('gain.csv')
-    words = df[df['gain'] >= 0.003].sort_values(by=['gain']).word.to_list()
+    # df = pd.read_csv('gain.csv')
+    # words = df[df['gain'] >= 0.003].sort_values(by=['gain']).word.to_list()
+
+    with open('src/features.txt', 'r') as file:
+        features = file.readlines()
+        features = [i.replace('\n','') for i in features]
+
+    new_db = vetorize_features(db, features)
+    new_db.to_csv('new_db.csv')
     
     
 
