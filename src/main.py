@@ -51,16 +51,6 @@ if __name__ == '__main__':
     #     features = file.readlines()
     #     features = [i.replace('\n','') for i in features]
 
-<<<<<<< HEAD
-    # new_db = vetorize_features(db, features)
-    # new_db.to_csv('new_db.csv')
-=======
-    new_db = vectorize_features_count(db, features)
-    # new_db.to_csv('new_db.csv')
-
->>>>>>> c2aeefa5be14a7314e01ef9cda08c520c2f8cfbc
-    
-    
 
 
 
