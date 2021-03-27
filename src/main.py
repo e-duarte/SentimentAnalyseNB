@@ -2,13 +2,9 @@ from load_data import load_texts
 import pre_processing
 from features_selection import bag_of_words, InformationGain
 from create_dataset import vectorize_features_count
+from dataset import Dataset
 import pandas as pd
 
-
-def save_features(word):
-    with open('src/features.txt', mode='w') as file:
-        for w in words:
-            file.write(f'{w}\n')
 
 if __name__ == '__main__':
     db = load_texts()
@@ -21,23 +17,20 @@ if __name__ == '__main__':
     db.dropna()
     db.to_csv('preprocessed.csv')
 
+    dt = Dataset(db.REVIEW, db.LABEL)
+
 
     # bag-of-word 1-grama
     print('GET BAG OF WORDS')
     bag = bag_of_words(db)
 
-    with open('bag.txt', mode='w') as file:
-        for word in bag:
-            file.write(f'{word}\n')
-    
-    # print('CALCULING THE INFORMATION GAIN...')
-    # gain = InformationGain(db_preprocessing, bag).gain()
-    # print(gain)
+    print('CALCULING THE INFORMATION GAIN...')
+    gain = InformationGain(dt, bag).gain()
 
+    gain = gain[gain['gain'] >= 0.001]
+    print(gain)
 
-    # # # gain = gain[gain['gain'] >= 0.7]
-
-    # gain.to_csv('gain.csv')
+    gain.to_csv('gain.csv')
     # # print(db_preprocessing[db_preprocessing.REVIEWS.str.find('not') == 0])
 
     # df = pd.read_csv('gain.csv')

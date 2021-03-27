@@ -1,6 +1,5 @@
-import pandas as pd
 import numpy as np
-
+import pandas as pd
 
 def bag_of_words(db):
     bag = []
@@ -17,21 +16,20 @@ class InformationGain:
     def __init__(self, dataset, bag):
         self.dataset = dataset
         self.bag = bag
-        self.n_classes =len(self.dataset.drop_duplicates('LABEL', keep='first'))
+        self.n_classes =len(self.dataset.dataset.drop_duplicates('LABEL', keep='first'))
     
-    def prob_label(self, c):
-        c = str(c)
-        return len(self.dataset[self.dataset.LABEL == c])/len(self.dataset.LABEL)
+    def prob(self, c, column):
+        c_space = self.dataset.find_x_column(c, column)
 
-    def prob_review(self, t):
-        t = str(t)
-        return len(self.dataset[self.dataset.REVIEWS.str.find(t) == 0])/len(self.dataset.LABEL)
+        amostral_space = self.dataset.dataset.LABEL
 
-    def H(self):
+        return len(c_space)/len(amostral_space)
+
+    def entropy(self):
         probs = np.zeros(self.n_classes)
 
         for c in range(self.n_classes):
-            probs[c] = self.prob_label(c)
+            probs[c] = self.prob(str(c), 'LABEL')
         
         log2s = np.log2(probs)
 
@@ -41,42 +39,29 @@ class InformationGain:
         
         return entropy_h
         
-    def cond_prob(self, apri, post):
-        apri = str(apri)
-        post = str(post)
-
-        apri  = f'\{apri}' if apri == '?' else apri
-        # apri = f'\{apri}' if apri.find('$') == 0 else apri
-
-        amostral_space = self.dataset[self.dataset.REVIEWS.str.match(
-            f'.*( ){apri}.*( )|^({apri})( ).*|.*( )({apri}$)|^({apri})$'
-        ,) == True]
-
-        post_space = amostral_space[amostral_space.LABEL == post]
+    def cond_prob(self, posteriori, priori, column1, column2, neg=False):
+        amostral_space = None
+        post_space = None
+        if not neg:
+            amostral_space = self.dataset.find_x_column(priori, column2)
+            post_space = self.dataset.find_x_y_column(priori, posteriori, column2, column1)
+        else:
+            amostral_space = self.dataset.find_x_neg_column(priori, column2)
+            post_space = self.dataset.find_x_y_neg_column(priori, posteriori, column2, column1)
 
         return len(post_space)/len(amostral_space)
 
-
-    def cond_prob_complement(self, apri, post):
-        apri = str(apri)
-        post = str(post)
-
-        apri  = f'\{apri}' if apri == '?' else apri
-        # apri = f'\{apri}' if apri.find('$') == 0 else apri
-
-        amostral_space = self.dataset.drop(self.dataset[self.dataset.REVIEWS.str.match(
-            f'.*( ){apri}.*( )|^({apri})( ).*|.*( )({apri}$)|^({apri})$'
-        ,) == True].index)
-
-        post_space = amostral_space[amostral_space.LABEL == post]
-
-        return len(post_space)/len(amostral_space)
     
-    def entropy_ngrama(self, apri):
+    def entropy_ngrama(self, priori):
         probs = np.zeros(self.n_classes, dtype='float64')
 
         for c in range(self.n_classes):
-            probs[c] = self.cond_prob(apri, c)
+            probs[c] = self.cond_prob(
+                posteriori=str(c),
+                priori=priori,
+                column1='LABEL',
+                column2='REVIEW'
+            )
         
         log2s = np.log2(probs, out=np.zeros_like(probs), where=(probs!=0))
 
@@ -84,14 +69,21 @@ class InformationGain:
         for c in range(self.n_classes):
             entropy_ngrama += probs[c]*log2s[c]
         
-        prob_ngrama = self.prob_review(apri)
+        prob_ngrama = self.prob(priori, 'REVIEW')
         entropy_ngrama = prob_ngrama*entropy_ngrama
+
 
         #complement
 
         complement_prob = np.zeros(self.n_classes, dtype='float64')
         for c in range(self.n_classes):
-            complement_prob[c] = self.cond_prob_complement(apri, c)
+            complement_prob[c] = self.cond_prob(
+                posteriori=str(c),
+                priori=priori,
+                column1='LABEL',
+                column2='REVIEW',
+                neg=True
+            )
 
         complement_log2s = np.log2(complement_prob, out=np.zeros_like(complement_prob), where=(complement_prob!=0))
 
@@ -108,7 +100,7 @@ class InformationGain:
 
         for word in self.bag:
             gain_words['word'].append(word)
-            gain_words['gain'].append(-self.H() + self.entropy_ngrama(word))
+            gain_words['gain'].append(-self.entropy() + self.entropy_ngrama(word))
 
         
         return pd.DataFrame(gain_words)
