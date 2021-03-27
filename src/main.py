@@ -17,28 +17,37 @@ if __name__ == '__main__':
     db.dropna()
     db.to_csv('preprocessed.csv')
 
-    dt = Dataset(db.REVIEW, db.LABEL)
+    # dt = Dataset(db.REVIEW, db.LABEL)
+
+    # # bag-of-word 1-grama
+    # print('GET BAG OF WORDS')
+    # bag = bag_of_words(db)
+
+    # print('CALCULING THE INFORMATION GAIN...')
+    # gain = InformationGain(dt, bag).gain()
+    # gain.to_csv('gain.csv')
+
+    #load gain per word
+    gain = pd.read_csv('gain.csv')
 
 
-    # bag-of-word 1-grama
-    print('GET BAG OF WORDS')
-    bag = bag_of_words(db)
+    threshold = 0.01
+    gain_threshold = gain[gain['gain'] >= threshold]
+    print(gain_threshold)
 
-    print('CALCULING THE INFORMATION GAIN...')
-    gain = InformationGain(dt, bag).gain()
-
-    gain = gain[gain['gain'] >= 0.001]
-    print(gain)
-
-    gain.to_csv('gain.csv')
-    # # print(db_preprocessing[db_preprocessing.REVIEWS.str.find('not') == 0])
-
-    # df = pd.read_csv('gain.csv')
-    # words = df[df['gain'] >= 0.003].sort_values(by=['gain']).word.to_list()
+    features = gain_threshold.sort_values(by=['gain']).word.to_list()
 
     # with open('src/features.txt', 'r') as file:
     #     features = file.readlines()
     #     features = [i.replace('\n','') for i in features]
+
+    feature_dataset = vectorize_features_count(db, features)
+    # feature_dataset.to_csv('feature_dataset.csv')
+
+    print(feature_dataset[
+        # (feature_dataset['poor'] >= 1) |
+        (feature_dataset['rib'] >= 1) 
+    ])
 
 
 
