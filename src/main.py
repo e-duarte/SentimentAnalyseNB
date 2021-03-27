@@ -8,14 +8,14 @@ import pandas as pd
 
 if __name__ == '__main__':
     db = load_texts()
-    # db.to_csv('original.csv')
-    # db.REVIEW = pre_processing.lower(db.REVIEW)
-    # db.REVIEW = pre_processing.separable_punctuation(db.REVIEW)
-    # db.REVIEW = pre_processing.remove_special_character(db.REVIEW)
-    # db.REVIEW = pre_processing.remove_stopwords(db.REVIEW)
-    # db.REVIEW = pre_processing.concat_words(db.REVIEW)
-    # db.dropna()
-    db.to_csv('preprocessed.csv')
+    db.to_csv('original.csv')
+    db.REVIEW = pre_processing.lower(db.REVIEW)
+    db.REVIEW = pre_processing.separable_punctuation(db.REVIEW)
+    db.REVIEW = pre_processing.remove_special_character(db.REVIEW)
+    db.REVIEW = pre_processing.remove_stopwords(db.REVIEW)
+    db.REVIEW = pre_processing.concat_words(db.REVIEW)
+    db.dropna()
+    # db.to_csv('preprocessed.csv')
 
     # dt = Dataset(db.REVIEW, db.LABEL)
 
@@ -27,7 +27,7 @@ if __name__ == '__main__':
     # gain = InformationGain(dt, bag).gain()
     # gain.to_csv('gain.csv')
 
-    #load gain per word
+    '''load information gain per word'''
     gain = pd.read_csv('gain.csv')
 
 
@@ -38,15 +38,9 @@ if __name__ == '__main__':
     features = gain_threshold.sort_values(by=['gain']).word.to_list()
 
     feature_dataset = vectorize_features_count(db, features)
-    # feature_dataset.to_csv('feature_dataset.csv')
+  
+    
 
-    print(feature_dataset
-    [
-        # (feature_dataset['awful'] >= 1) |
-        # (feature_dataset['fine'] >= 1) |
-        (feature_dataset['recommend'] >= 1) 
-    ]
-    )
 
 
 
