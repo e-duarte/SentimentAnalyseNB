@@ -99,7 +99,7 @@ class InformationGain:
         gain_words = {'word':[], 'gain':[]}
 
         for i, word in enumerate(self.bag):
-            print(f'{i}/{len(self.bag)} WORDS PROCESSED')
+            print(f'{i+1}/{len(self.bag)} WORDS PROCESSED')
             gain_words['word'].append(word)
             gain_words['gain'].append(-self.entropy() + self.entropy_ngrama(word))
 

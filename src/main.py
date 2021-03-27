@@ -8,18 +8,18 @@ import pandas as pd
 
 if __name__ == '__main__':
     db = load_texts()
-    db.to_csv('original.csv')
-    db.REVIEW = pre_processing.lower(db.REVIEW)
-    db.REVIEW = pre_processing.separable_punctuation(db.REVIEW)
-    db.REVIEW = pre_processing.remove_special_character(db.REVIEW)
-    db.REVIEW = pre_processing.remove_stopwords(db.REVIEW)
-    db.REVIEW = pre_processing.concat_words(db.REVIEW)
-    db.dropna()
+    # db.to_csv('original.csv')
+    # db.REVIEW = pre_processing.lower(db.REVIEW)
+    # db.REVIEW = pre_processing.separable_punctuation(db.REVIEW)
+    # db.REVIEW = pre_processing.remove_special_character(db.REVIEW)
+    # db.REVIEW = pre_processing.remove_stopwords(db.REVIEW)
+    # db.REVIEW = pre_processing.concat_words(db.REVIEW)
+    # db.dropna()
     db.to_csv('preprocessed.csv')
 
     # dt = Dataset(db.REVIEW, db.LABEL)
 
-    # # bag-of-word 1-grama
+    # # # bag-of-word 1-grama
     # print('GET BAG OF WORDS')
     # bag = bag_of_words(db)
 
@@ -31,23 +31,22 @@ if __name__ == '__main__':
     gain = pd.read_csv('gain.csv')
 
 
-    threshold = 0.01
+    threshold = 0.005
     gain_threshold = gain[gain['gain'] >= threshold]
     print(gain_threshold)
 
     features = gain_threshold.sort_values(by=['gain']).word.to_list()
 
-    # with open('src/features.txt', 'r') as file:
-    #     features = file.readlines()
-    #     features = [i.replace('\n','') for i in features]
-
     feature_dataset = vectorize_features_count(db, features)
     # feature_dataset.to_csv('feature_dataset.csv')
 
-    print(feature_dataset[
-        # (feature_dataset['poor'] >= 1) |
-        (feature_dataset['rib'] >= 1) 
-    ])
+    print(feature_dataset
+    [
+        # (feature_dataset['awful'] >= 1) |
+        # (feature_dataset['fine'] >= 1) |
+        (feature_dataset['recommend'] >= 1) 
+    ]
+    )
 
 
 

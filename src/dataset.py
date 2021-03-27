@@ -5,7 +5,7 @@ class Dataset:
     def __init__(self, X, Y):
         self.dataset = pd.concat([X,Y], axis=1)
 
-        self.pat = '^({} )| {} |( {})$|{}'
+        self.pat = '^({} )| {} |( {})$|^({})$'
 
     def find_x_column(self, x, column):
         x = f'\{x}' if x == '?' else x

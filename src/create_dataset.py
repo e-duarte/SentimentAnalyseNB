@@ -17,7 +17,6 @@ def vectorize_features_count(dataset, features):
     labels = dataset['LABEL'].tolist()
     for review, label in zip(dataset['REVIEW'], labels):
         for feature in features:
-            print(review)
             words = str(review).split(' ')
             dic_db[feature].append(words.count(feature))
         dic_db['label'].append(label)
