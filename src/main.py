@@ -44,6 +44,7 @@ if __name__ == '__main__':
     features = gain_threshold.sort_values(by=['gain']).word.to_list()
 
     feature_dataset = vectorize_features_count(db, features)
+    feature_dataset.to_json('feature_dataset.json')
 
     print('TRAINING AND PREDICTING...')
     
@@ -57,29 +58,10 @@ if __name__ == '__main__':
         print(f'Calculing GaussianNB {k}-fold....')
         cv_results = k_cross_validate(clf=gnb, X=X, y=y, k =k)
         print(cv_results)
+
         sn.heatmap(pd.DataFrame(cv_results['cm'], index = [i for i in "01"],
                   columns = [i for i in "01"]), annot=True, fmt='3.0f')
         plt.show()
-
-    # cnb = CategoricalNB()
-    # values_k = [10,15,20]
-    # for k in values_k:
-    #     print(f'Calculing CategoricalNB {k}-fold....')
-    #     cv_results = k_cross_validate(clf=cnb, X=X, y=y, k =k)
-    #     print(cv_results)
-
-    print('PLOTING CONFUSION MATRIX')
-    # # for k in values_k:
-    # disp = plot_confusion_matrix(gnb, X, y,
-    #         # display_labels=("Confusion matrix, without normalization", None),
-    #         cmap=plt.cm.Blues,
-    #         # normalize=normalize
-    #         )
-    # print(disp.confusion_matrix)
-    
-
-  
-    
 
 
 
