@@ -3,6 +3,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import make_scorer
+import numpy as np
 
 
 def confusion_matrix_scorer(clf, X, y):
@@ -25,7 +26,8 @@ def k_cross_validate(clf, X, y, k):
         'tp': tp, 'fp': fp,
         'fn':fn, 'tn': tn,
         'accuracy': (tp+tn)/(tp+fn+fp+tn),
-        'precision': tp/(tp+fp)
+        'precision': tp/(tp+fp),
+        'cm': np.array([[tp, fp], [fn, tn]])
     }
 
 def hold_out(X, y):

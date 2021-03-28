@@ -7,7 +7,9 @@ import pandas as pd
 from validation import k_cross_validate
 from sklearn.naive_bayes import GaussianNB
 from sklearn.naive_bayes import CategoricalNB
-
+from sklearn.metrics import plot_confusion_matrix
+import matplotlib.pyplot as plt
+import seaborn as sn
 
 
 if __name__ == '__main__':
@@ -45,7 +47,7 @@ if __name__ == '__main__':
 
     print('TRAINING AND PREDICTING...')
     
-    y = feature_dataset['label']
+    y = feature_dataset['label'].astype('int32')
     X = feature_dataset.drop(columns=['label'])
 
     # k-fold cross-validation
@@ -55,14 +57,26 @@ if __name__ == '__main__':
         print(f'Calculing GaussianNB {k}-fold....')
         cv_results = k_cross_validate(clf=gnb, X=X, y=y, k =k)
         print(cv_results)
+        sn.heatmap(pd.DataFrame(cv_results['cm'], index = [i for i in "01"],
+                  columns = [i for i in "01"]), annot=True, fmt='3.0f')
+        plt.show()
 
-    cnb = CategoricalNB()
-    values_k = [10,15,20]
-    for k in values_k:
-        print(f'Calculing CategoricalNB {k}-fold....')
-        cv_results = k_cross_validate(clf=cnb, X=X, y=y, k =k)
-        print(cv_results)
+    # cnb = CategoricalNB()
+    # values_k = [10,15,20]
+    # for k in values_k:
+    #     print(f'Calculing CategoricalNB {k}-fold....')
+    #     cv_results = k_cross_validate(clf=cnb, X=X, y=y, k =k)
+    #     print(cv_results)
 
+    print('PLOTING CONFUSION MATRIX')
+    # # for k in values_k:
+    # disp = plot_confusion_matrix(gnb, X, y,
+    #         # display_labels=("Confusion matrix, without normalization", None),
+    #         cmap=plt.cm.Blues,
+    #         # normalize=normalize
+    #         )
+    # print(disp.confusion_matrix)
+    
 
   
     
