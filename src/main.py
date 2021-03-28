@@ -42,11 +42,13 @@ if __name__ == '__main__':
     features = gain_threshold.sort_values(by=['gain']).word.to_list()
 
     feature_dataset = vectorize_features_count(db, features)
+    feature_dataset.to_json('feature_dataset.json')
 
     print('TRAINING AND PREDICTING...')
     
-    y = feature_dataset['label']
+    y = feature_dataset['label'].to_numpy()
     X = feature_dataset.drop(columns=['label'])
+    X = X.to_numpy()
 
     # k-fold cross-validation
     gnb = GaussianNB()
@@ -56,12 +58,12 @@ if __name__ == '__main__':
         cv_results = k_cross_validate(clf=gnb, X=X, y=y, k =k)
         print(cv_results)
 
-    cnb = CategoricalNB()
-    values_k = [10,15,20]
-    for k in values_k:
-        print(f'Calculing CategoricalNB {k}-fold....')
-        cv_results = k_cross_validate(clf=cnb, X=X, y=y, k =k)
-        print(cv_results)
+    # cnb = CategoricalNB()
+    # values_k = [10,15,20]
+    # for k in values_k:
+    #     print(f'Calculing CategoricalNB {k}-fold....')
+    #     cv_results = k_cross_validate(clf=cnb, X=X, y=y, k =k)
+    #     print(cv_results)
 
 
   
