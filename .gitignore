@@ -125,6 +125,8 @@ venv.bak/
 dmypy.json
 
 original.csv
-gain.csv
+# gain.csv
 preprocessed.csv
 new_db.csv
+bag.txt
+features_dataset.csv
