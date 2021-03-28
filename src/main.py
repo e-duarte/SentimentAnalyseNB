@@ -4,6 +4,10 @@ from features_selection import bag_of_words, InformationGain
 from create_dataset import vectorize_features_count
 from dataset import Dataset
 import pandas as pd
+from validation import k_cross_validate
+from sklearn.naive_bayes import GaussianNB
+from sklearn.naive_bayes import CategoricalNB
+
 
 
 if __name__ == '__main__':
@@ -31,13 +35,35 @@ if __name__ == '__main__':
     gain = pd.read_csv('gain.csv')
 
 
-    threshold = 0.005
+    threshold = 0.0011
     gain_threshold = gain[gain['gain'] >= threshold]
-    print(gain_threshold)
+    #print(gain_threshold)
 
     features = gain_threshold.sort_values(by=['gain']).word.to_list()
 
     feature_dataset = vectorize_features_count(db, features)
+
+    print('TRAINING AND PREDICTING...')
+    
+    y = feature_dataset['label']
+    X = feature_dataset.drop(columns=['label'])
+
+    # k-fold cross-validation
+    gnb = GaussianNB()
+    values_k = [10,15,20]
+    for k in values_k:
+        print(f'Calculing GaussianNB {k}-fold....')
+        cv_results = k_cross_validate(clf=gnb, X=X, y=y, k =k)
+        print(cv_results)
+
+    cnb = CategoricalNB()
+    values_k = [10,15,20]
+    for k in values_k:
+        print(f'Calculing CategoricalNB {k}-fold....')
+        cv_results = k_cross_validate(clf=cnb, X=X, y=y, k =k)
+        print(cv_results)
+
+
   
     
 
